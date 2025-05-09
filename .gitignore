@@ -33,11 +33,11 @@ bin/
 .DS_Store
 
 # src/
-src/Environment/*.class
-src/Environment/*.java
-src/DAO/*.class
-src/Entidades/*.class
-src/Manager/*.class
+src/main/java/Environment/*.class
+src/main/java/Environment/*.java
+src/main/java/DAO/*.class
+src/main/java/Entidades/*.class
+src/main/java/Manager/*.class
 
 
 target/*
