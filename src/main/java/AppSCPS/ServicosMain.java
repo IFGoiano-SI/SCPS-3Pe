@@ -1,14 +1,14 @@
 package AppSCPS;
-/*
+
 import Manager.ClienteManager;
 import Manager.FuncionarioManager;
 import Manager.OrdemServicoManager;
 import Manager.UsuarioManager;
 import Entidades.Usuario;
 import java.util.Scanner;
-*/
+
 public class ServicosMain {
-    /*
+
     private static Scanner scanner = new Scanner(System.in);
     private static ClienteManager clienteManager = new ClienteManager();
     private static FuncionarioManager funcionarioManager = new FuncionarioManager();
@@ -354,5 +354,4 @@ public class ServicosMain {
             System.out.println("Erro inesperado: " + e.getMessage());
         }
     }
-        */
 }
