@@ -193,8 +193,14 @@ public class FuncionarioManager {
 
             Funcionario funcionario = funcionarioDAO.buscarPorId(id);
             if (funcionario != null) {
-                funcionarioDAO.remover(id);
-                System.out.println("\n - Funcionário excluído com sucesso!");
+                // funcionarioDAO.remover(id);
+                // System.out.println("\n - Funcionário excluído com sucesso!");
+                funcionario.setAtivo(0);
+                if (funcionarioDAO.atualizar(funcionario)) {
+                    System.out.println("\n - Funcionário excluído com sucesso!");
+                } else {
+                    System.out.println("\n - Erro ao excluir funcionário.");
+                }
             } else {
                 System.out.println("\n - Funcionário não encontrado.");
             }

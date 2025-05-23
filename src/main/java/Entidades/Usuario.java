@@ -12,6 +12,7 @@ public class Usuario {
     private String tipoUsuario;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private int ativo = 1;
 
     /**
      * Construtor padrão.
@@ -29,7 +30,8 @@ public class Usuario {
      * @param createdAt   Data de criação do registro.
      * @param updatedAt   Data de atualização do registro.
      */
-    public Usuario(int idUsuario, String nomeUsuario, String senha, String tipoUsuario, java.time.LocalDateTime createdAt, java.time.LocalDateTime updatedAt) {
+    public Usuario(int idUsuario, String nomeUsuario, String senha, String tipoUsuario,
+            java.time.LocalDateTime createdAt, java.time.LocalDateTime updatedAt) {
         this.idUsuario = idUsuario;
         this.nomeUsuario = nomeUsuario;
         this.senha = senha;
@@ -38,14 +40,14 @@ public class Usuario {
         this.updatedAt = updatedAt;
     }
 
-    public Usuario(int idUsuario, String nomeUsuario, String tipoUsuario, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Usuario(int idUsuario, String nomeUsuario, String tipoUsuario, LocalDateTime createdAt,
+            LocalDateTime updatedAt) {
         this.idUsuario = idUsuario;
         this.nomeUsuario = nomeUsuario;
         this.tipoUsuario = tipoUsuario;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
 
     /**
      * Obtém o identificador único do usuário.
@@ -153,6 +155,24 @@ public class Usuario {
      */
     public void setUpdatedAt(java.time.LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    /**
+     * Obtém o status de ativo do usuário.
+     *
+     * @return O status de ativo (1 para ativo, 0 para inativo).
+     */
+    public int getAtivo() {
+        return ativo;
+    }
+
+    /**
+     * Define o status de ativo do usuário.
+     *
+     * @param ativo O novo status de ativo (1 para ativo, 0 para inativo).
+     */
+    public void setAtivo(int ativo) {
+        this.ativo = ativo;
     }
 
     /**

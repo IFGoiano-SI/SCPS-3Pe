@@ -119,8 +119,14 @@ public class UsuarioManager {
 
             Usuario usuario = usuarioDAO.buscarPorId(id);
             if (usuario != null) {
-                usuarioDAO.remover(id);
-                System.out.println("\n - Usuário excluído com sucesso!");
+                // usuarioDAO.remover(id);
+                usuario.setAtivo(0);
+                // System.out.println("\n - Usuário excluído com sucesso!");
+                if (usuarioDAO.atualizar(usuario)) {
+                    System.out.println("\n - Usuário excluído com sucesso!");
+                } else {
+                    System.out.println("\n - Erro ao excluir usuário.");
+                }
             } else {
                 System.out.println("\n - Usuário não encontrado.");
             }

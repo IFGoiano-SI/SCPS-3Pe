@@ -44,7 +44,7 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
 
     @Override
     public boolean atualizar(OrdemServico ordemServico) {
-        String sql = "UPDATE ordem_servico SET data_abertura = ?, data_conclusao = ?, status = ?, id_cliente = ?, id_funcionario = ?, descricao = ?, valor_pago = ? WHERE id_ordem = ?";
+        String sql = "UPDATE ordem_servico SET data_abertura = ?, data_conclusao = ?, status = ?, id_cliente = ?, id_funcionario = ?, descricao = ?, valor_pago = ?, ativo = ?  WHERE id_ordem = ?";
         try (PreparedStatement stmt = new ConexaoDB().getConexao().prepareStatement(sql)) {
             stmt.setTimestamp(1, Timestamp.valueOf(ordemServico.getDataAbertura()));
             stmt.setTimestamp(2, ordemServico.getDataConclusao() != null ? Timestamp.valueOf(ordemServico.getDataConclusao()) : null);
@@ -53,7 +53,8 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
             stmt.setInt(5, ordemServico.getFuncionario().getIdFuncionario());
             stmt.setString(6, ordemServico.getDescricao()); // Adicionado o campo descrição no SQL
             stmt.setDouble(7, ordemServico.getValorPago()); // Adicionado o campo valor_pago no SQL
-            stmt.setInt(8, ordemServico.getIdOrdem());
+            stmt.setInt(8, ordemServico.getAtivo()); // Adicionado o campo ativo no SQL
+            stmt.setInt(9, ordemServico.getIdOrdem());
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -77,7 +78,7 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
 
     @Override
     public OrdemServico buscarPorId(int id) {
-        String sql = "SELECT * FROM ordem_servico WHERE id_ordem = ?";
+        String sql = "SELECT * FROM ordem_servico WHERE id_ordem = ? AND ativo = 1";
         try (PreparedStatement stmt = new ConexaoDB().getConexao().prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -106,7 +107,7 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
 
     @Override
     public List<OrdemServico> listarTodos() {
-        String sql = "SELECT * FROM ordem_servico";
+        String sql = "SELECT * FROM ordem_servico WHERE ativo = 1";
         List<OrdemServico> ordens = new ArrayList<>();
         try (PreparedStatement stmt = new ConexaoDB().getConexao().prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
@@ -135,7 +136,7 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
     }
 
     public List<OrdemServico> buscarPorCliente(int idCliente) {
-        String sql = "SELECT * FROM ordem_servico WHERE id_cliente = ?";
+        String sql = "SELECT * FROM ordem_servico WHERE id_cliente = ? AND ativo = 1";
         List<OrdemServico> ordens = new ArrayList<>();
         try (Connection connection = new ConexaoDB().getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -160,7 +161,7 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
     }
 
     public List<OrdemServico> buscarPorFuncionario(int idFuncionario) {
-        String sql = "SELECT * FROM ordem_servico WHERE id_funcionario = ?";
+        String sql = "SELECT * FROM ordem_servico WHERE id_funcionario = ? AND ativo = 1";
         List<OrdemServico> ordens = new ArrayList<>();
         try (Connection connection = new ConexaoDB().getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql)) {

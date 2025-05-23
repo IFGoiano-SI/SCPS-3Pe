@@ -59,7 +59,8 @@ public class OrdemServicoManager {
 
             OrdemServico ordemServico = ordemServicoDAO.buscarPorId(idOrdem);
             if (ordemServico != null) {
-                if (ordemServicoDAO.remover(idOrdem)) {
+                ordemServico.setAtivo(0);
+                if (ordemServicoDAO.atualizar(ordemServico)) {
                     System.out.println("\n - Ordem de Serviço excluída com sucesso!");
                 } else {
                     System.out.println("\n - Falha ao excluir Ordem de Serviço.");
