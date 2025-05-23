@@ -44,7 +44,7 @@ CREATE TABLE `cliente` (
 
 LOCK TABLES `cliente` WRITE;
 /*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES (4,'Rubiataba Industrial','62996956448','elenilton.silva@rubisa.com.br',11,'2025-05-08 20:26:46','2025-05-09 19:28:54',1),(5,'CRV industrial','62999344425','crvindustrial@crvindustrial.com',12,'2025-05-09 19:23:57','2025-05-09 20:38:25',0);
+INSERT INTO `cliente` VALUES (1,'Rubiataba Industrial','62996956448','elenilton.silva@rubisa.com.br',11,'2025-05-08 20:26:46','2025-05-23 20:34:33',1),(2,'CRV industrial','62999344425','crvindustrial@crvindustrial.com',12,'2025-05-09 19:23:57','2025-05-23 20:35:33',1);
 /*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -68,7 +68,7 @@ CREATE TABLE `endereco` (
   PRIMARY KEY (`id_endereco`),
   KEY `cidade` (`cidade`),
   KEY `estado` (`estado`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -77,7 +77,7 @@ CREATE TABLE `endereco` (
 
 LOCK TABLES `endereco` WRITE;
 /*!40000 ALTER TABLE `endereco` DISABLE KEYS */;
-INSERT INTO `endereco` VALUES (8,'rtyui','ytyuio','tyu','rtyu','GO','6789','2025-05-08 20:11:31','2025-05-08 20:11:31'),(9,'1234','1234','123','123','go','1234','2025-05-08 20:14:11','2025-05-08 20:14:11'),(10,'Rua das1','123','teste','Rubiataba','GO','76350000','2025-05-08 20:21:37','2025-05-08 20:21:37'),(11,'Algum Local','sn','Zona Rural','Rubiataba','Go','763500000','2025-05-08 20:26:40','2025-05-09 19:28:51'),(12,'Zona Rural','sn','GO','Carmo do Rio Verde','GO','76340000','2025-05-09 19:23:54','2025-05-09 19:23:54'),(13,'rt','rty','rty','fg','go','763400000','2025-05-09 19:30:14','2025-05-09 19:30:14'),(14,'Algum local','sn','Não sei','Itapaci','Go','76360000','2025-05-09 19:35:05','2025-05-09 19:35:05'),(15,'Alguma de Ceres','sn','Não sei','Rialma','GO','76350000','2025-05-09 20:09:14','2025-05-09 20:09:14'),(16,'Sem','sn','Algum ai','Itapaci','GO','76350000','2025-05-09 20:16:37','2025-05-09 20:16:37'),(17,'alguma rua','sn','Jardim Sorriso','Itapaci','Go','76123000','2025-05-09 20:24:11','2025-05-09 20:24:11'),(18,'zsdfgth','sdfg','dfg','sdfg','go','342334','2025-05-09 20:31:19','2025-05-09 20:31:19');
+INSERT INTO `endereco` VALUES (8,'rtyui','ytyuio','tyu','rtyu','GO','6789','2025-05-08 20:11:31','2025-05-08 20:11:31'),(9,'1234','1234','123','123','go','1234','2025-05-08 20:14:11','2025-05-08 20:14:11'),(10,'Rua das1','123','teste','Rubiataba','GO','76350000','2025-05-08 20:21:37','2025-05-08 20:21:37'),(11,'Algum Local','sn','Zona Rural','Rubiataba','Go','763500000','2025-05-08 20:26:40','2025-05-09 19:28:51'),(12,'Zona Rural','sn','GO','Carmo do Rio Verde','GO','76340000','2025-05-09 19:23:54','2025-05-09 19:23:54'),(13,'rt','rty','rty','fg','go','763400000','2025-05-09 19:30:14','2025-05-09 19:30:14'),(14,'Algum local','sn','Não sei','Itapaci','Go','76360000','2025-05-09 19:35:05','2025-05-09 19:35:05'),(15,'Alguma de Ceres','sn','Não sei','Rialma','GO','76350000','2025-05-09 20:09:14','2025-05-09 20:09:14'),(16,'Sem','sn','Algum ai','Itapaci','GO','76350000','2025-05-09 20:16:37','2025-05-09 20:16:37'),(17,'alguma rua','sn','Jardim Sorriso','Itapaci','Go','76123000','2025-05-09 20:24:11','2025-05-09 20:24:11'),(18,'zsdfgth','sdfg','dfg','sdfg','go','342334','2025-05-09 20:31:19','2025-05-09 20:31:19'),(19,'Rua Tchurusbangos','333','Tchurusbagos','Minas Gerais','BH','76300000','2025-05-23 20:29:56','2025-05-23 20:29:56');
 /*!40000 ALTER TABLE `endereco` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -105,7 +105,7 @@ CREATE TABLE `funcionario` (
   KEY `id_usuario` (`id_usuario`),
   CONSTRAINT `funcionario_ibfk_1` FOREIGN KEY (`id_endereco`) REFERENCES `endereco` (`id_endereco`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `funcionario_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -114,7 +114,7 @@ CREATE TABLE `funcionario` (
 
 LOCK TABLES `funcionario` WRITE;
 /*!40000 ALTER TABLE `funcionario` DISABLE KEYS */;
-INSERT INTO `funcionario` VALUES (2,'Elenilton Silva','Gerente','62999344425','elenilton.silva@scps.com.br',8,4,'2025-05-08 20:11:49','2025-05-09 20:21:34',1),(3,'Iasmyn Severo','Assistente de Financeiro','62999998888','iasmyn.severo@scps.com.br',14,5,'2025-05-09 19:35:41','2025-05-09 20:21:33',1),(4,'Giovana Lyssa','Designer','62987654321','giovana.lyssa@scps.com.br',15,6,'2025-05-09 20:09:38','2025-05-23 19:04:24',0),(5,'Janiele Machado','Social Media','6298125683','janiele.machado@scps.com.br',16,7,'2025-05-09 20:16:59','2025-05-09 20:18:50',0),(6,'rfty','sdfg','srdtfygh','fdghj',18,8,'2025-05-09 20:31:30','2025-05-23 17:42:28',0);
+INSERT INTO `funcionario` VALUES (2,'Elenilton Silva','Gerente','62999344425','elenilton.silva@scps.com.br',8,4,'2025-05-08 20:11:49','2025-05-09 20:21:34',1),(3,'Iasmyn Severo','Assistente de Financeiro','62999998888','iasmyn.severo@scps.com.br',14,5,'2025-05-09 19:35:41','2025-05-09 20:21:33',1),(4,'Giovana Lyssa','Designer','62987654321','giovana.lyssa@scps.com.br',15,6,'2025-05-09 20:09:38','2025-05-23 19:04:24',0),(5,'Janiele Machado','Social Media','6298125683','janiele.machado@scps.com.br',16,7,'2025-05-09 20:16:59','2025-05-09 20:18:50',0),(6,'Edvaldo','TI','62999187061','edvaldo.abreu1006@scpsl.com',19,9,'2025-05-23 20:30:08','2025-05-23 20:40:20',0);
 /*!40000 ALTER TABLE `funcionario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -151,7 +151,7 @@ CREATE TABLE `ordem_servico` (
 
 LOCK TABLES `ordem_servico` WRITE;
 /*!40000 ALTER TABLE `ordem_servico` DISABLE KEYS */;
-INSERT INTO `ordem_servico` VALUES (1,'2025-05-08 21:46:55','2025-05-09 01:20:27','CONCLUIDA',4,2,'Batatinha','2025-05-08 21:47:26','2025-05-09 01:20:33',2010);
+INSERT INTO `ordem_servico` VALUES (1,'2025-05-08 21:46:55','2025-05-09 01:20:27','CONCLUIDA',1,2,'Batatinha','2025-05-08 21:47:26','2025-05-09 01:20:33',2010);
 /*!40000 ALTER TABLE `ordem_servico` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -207,7 +207,7 @@ CREATE TABLE `usuario` (
   `ativo` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_usuario`),
   UNIQUE KEY `nome_usuario` (`nome_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -216,7 +216,7 @@ CREATE TABLE `usuario` (
 
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
-INSERT INTO `usuario` VALUES (4,'eleh','d4d05ffedceb73312ac20626a34f248c90786dd4','ADMIN','2025-05-08 20:11:45','2025-05-09 20:11:05',1),(5,'iasmyn.severo','a68fa14ff288bc54a2da230603aba870930061a6','FUNCIONARIO','2025-05-09 19:35:38','2025-05-09 19:35:38',1),(6,'giovana.lyssa','ac859f658354bb2b3cbf0dad927a0d8aed1c052a','FUNCIONARIO','2025-05-09 20:09:35','2025-05-09 20:09:35',1),(7,'janiele.machado','646c3fad45809c2a958cce7b5df636ef8de93e7d','FUNCIONARIO','2025-05-09 20:16:56','2025-05-09 20:16:56',1),(8,'eu','b7b18c7cc89c1918fa4956fc3cf64fb6dd70d494','FUNCIONARIO','2025-05-09 20:31:26','2025-05-23 19:09:29',0);
+INSERT INTO `usuario` VALUES (4,'eleh','d4d05ffedceb73312ac20626a34f248c90786dd4','ADMIN','2025-05-08 20:11:45','2025-05-09 20:11:05',1),(5,'iasmyn.severo','a68fa14ff288bc54a2da230603aba870930061a6','FUNCIONARIO','2025-05-09 19:35:38','2025-05-09 19:35:38',1),(6,'giovana.lyssa','ac859f658354bb2b3cbf0dad927a0d8aed1c052a','FUNCIONARIO','2025-05-09 20:09:35','2025-05-09 20:09:35',1),(7,'janiele.machado','646c3fad45809c2a958cce7b5df636ef8de93e7d','FUNCIONARIO','2025-05-09 20:16:56','2025-05-09 20:16:56',1),(8,'eu','b7b18c7cc89c1918fa4956fc3cf64fb6dd70d494','FUNCIONARIO','2025-05-09 20:31:26','2025-05-23 19:09:29',0),(9,'Edvaldo','3dd6052434c7341e2d370aaeb820eb7f2a859f9f','FUNCIONARIO','2025-05-23 20:30:06','2025-05-23 20:30:06',1);
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -229,4 +229,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-23 19:12:36
+-- Dump completed on 2025-05-23 20:41:34
