@@ -37,13 +37,14 @@ public class UsuarioDAO implements DAO<Usuario> {
 
     @Override
     public boolean atualizar(Usuario usuario) {
-        String sql = "UPDATE usuario SET nome_usuario = ?, senha = SHA1(?), tipo_usuario = ? WHERE id_usuario = ?";
+        String sql = "UPDATE usuario SET nome_usuario = ?, senha = SHA1(?), tipo_usuario = ?, ativo = ? WHERE id_usuario = ? AND ativo = 1";
         try (Connection connection = new ConexaoDB().getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, usuario.getNomeUsuario());
             stmt.setString(2, usuario.getSenha());
             stmt.setString(3, usuario.getTipoUsuario());
-            stmt.setInt(4, usuario.getIdUsuario());
+            stmt.setInt(4, usuario.getAtivo());
+            stmt.setInt(5, usuario.getIdUsuario());
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -68,7 +69,7 @@ public class UsuarioDAO implements DAO<Usuario> {
 
     @Override
     public Usuario buscarPorId(int id) {
-        String sql = "SELECT * FROM usuario WHERE id_usuario = ?";
+        String sql = "SELECT * FROM usuario WHERE id_usuario = ? AND ativo = 1";
         try (Connection connection = new ConexaoDB().getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -92,7 +93,7 @@ public class UsuarioDAO implements DAO<Usuario> {
 
     @Override
     public List<Usuario> listarTodos() {
-        String sql = "SELECT * FROM usuario";
+        String sql = "SELECT * FROM usuario WHERE ativo = 1";
         List<Usuario> usuarios = new ArrayList<>();
         try (Connection connection = new ConexaoDB().getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql);
@@ -113,7 +114,7 @@ public class UsuarioDAO implements DAO<Usuario> {
     }
 
     public Usuario buscarPorNomeESenha(String nomeUsuario, String senha) {
-        String sql = "SELECT * FROM usuario WHERE UPPER(nome_usuario) = UPPER(?) AND senha = SHA1(?)";
+        String sql = "SELECT * FROM usuario WHERE UPPER(nome_usuario) = UPPER(?) AND senha = SHA1(?) AND ativo = 1";
         try (Connection connection = new ConexaoDB().getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, nomeUsuario);

@@ -45,7 +45,7 @@ public class FuncionarioDAO implements DAO<Funcionario> {
 
     @Override
     public boolean atualizar(Funcionario funcionario) {
-        String sql = "UPDATE funcionario SET nome = ?, cargo = ?, telefone = ?, email = ?, id_endereco = ?, id_usuario = ? WHERE id_funcionario = ?";
+        String sql = "UPDATE funcionario SET nome = ?, cargo = ?, telefone = ?, email = ?, id_endereco = ?, id_usuario = ?, ativo = ? WHERE id_funcionario = ? AND ativo = 1";
         try (Connection connection = new ConexaoDB().getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, funcionario.getNome());
@@ -54,7 +54,8 @@ public class FuncionarioDAO implements DAO<Funcionario> {
             stmt.setString(4, funcionario.getEmail());
             stmt.setInt(5, funcionario.getEndereco().getId());
             stmt.setInt(6, funcionario.getUsuario().getIdUsuario());
-            stmt.setInt(7, funcionario.getIdFuncionario());
+            stmt.setInt(7, funcionario.getAtivo());
+            stmt.setInt(8, funcionario.getIdFuncionario());
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -79,7 +80,7 @@ public class FuncionarioDAO implements DAO<Funcionario> {
 
     @Override
     public Funcionario buscarPorId(int id) {
-        String sql = "SELECT * FROM funcionario WHERE id_funcionario = ?";
+        String sql = "SELECT * FROM funcionario WHERE id_funcionario = ? AND ativo = 1";
         try (Connection connection = new ConexaoDB().getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -108,7 +109,7 @@ public class FuncionarioDAO implements DAO<Funcionario> {
 
     @Override
     public List<Funcionario> listarTodos() {
-        String sql = "SELECT * FROM funcionario";
+        String sql = "SELECT * FROM funcionario WHERE ativo = 1";
         List<Funcionario> funcionarios = new ArrayList<>();
         try (Connection connection = new ConexaoDB().getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql);
