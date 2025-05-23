@@ -34,7 +34,8 @@ bin/
 
 # src/
 src/main/java/Environment/*.class
-src/main/java/Environment/*.java
+src/main/java/Environment/Environment.java
+# src/main/java/Environment/*.java
 src/main/java/DAO/*.class
 src/main/java/Entidades/*.class
 src/main/java/Manager/*.class
