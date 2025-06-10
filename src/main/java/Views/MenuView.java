@@ -1,9 +1,9 @@
 package Views;
 
-import Manager.ClienteManager;
-import Manager.FuncionarioManager;
-import Manager.OrdemServicoManager;
-import Manager.UsuarioManager;
+// import Manager.ClienteManager;
+// import Manager.FuncionarioManager;
+// import Manager.OrdemServicoManager;
+// import Manager.UsuarioManager;
 import Entidades.Usuario;
 
 import javax.swing.*;
@@ -11,17 +11,17 @@ import java.awt.*;
 
 public class MenuView extends JFrame {
     private Usuario usuarioLogado;
-    private ClienteManager clienteManager;
-    private FuncionarioManager funcionarioManager;
-    private OrdemServicoManager ordemServicoManager;
-    private UsuarioManager usuarioManager;
+    // private ClienteManager clienteManager;
+    // private FuncionarioManager funcionarioManager;
+    // private OrdemServicoManager ordemServicoManager;
+    // private UsuarioManager usuarioManager;
 
     public MenuView(Usuario usuario) {
         this.usuarioLogado = usuario;
-        this.clienteManager = new ClienteManager();
-        this.funcionarioManager = new FuncionarioManager();
-        this.ordemServicoManager = new OrdemServicoManager();
-        this.usuarioManager = new UsuarioManager();
+        // this.clienteManager = new ClienteManager();
+        // this.funcionarioManager = new FuncionarioManager();
+        // this.ordemServicoManager = new OrdemServicoManager();
+        // this.usuarioManager = new UsuarioManager();
 
         initializeComponents();
     }
