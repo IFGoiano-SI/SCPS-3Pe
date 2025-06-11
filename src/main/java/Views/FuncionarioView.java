@@ -230,23 +230,21 @@ public class FuncionarioView extends JFrame {
         btnAtualizar = new JButton("Atualizar");
         btnExcluir = new JButton("Excluir");
         btnLimpar = new JButton("Limpar");
-        
         // Estilizar botões
         btnNovo.setBackground(new Color(0, 123, 255));
-        btnNovo.setForeground(Color.WHITE);
+//        btnNovo.setForeground(Color.WHITE);
         
         btnSalvar.setBackground(new Color(40, 167, 69));
-        btnSalvar.setForeground(Color.WHITE);
+//        btnSalvar.setForeground(Color.WHITE);
         
         btnAtualizar.setBackground(new Color(255, 193, 7));
-        btnAtualizar.setForeground(Color.BLACK);
+//        btnAtualizar.setForeground(Color.BLACK);
         
         btnExcluir.setBackground(new Color(220, 53, 69));
-        btnExcluir.setForeground(Color.WHITE);
+//        btnExcluir.setForeground(Color.WHITE);
         
         btnLimpar.setBackground(new Color(108, 117, 125));
-        btnLimpar.setForeground(Color.WHITE);
-        
+//        btnLimpar.setForeground(Color.WHITE);
         panel.add(btnNovo);
         panel.add(btnSalvar);
         panel.add(btnAtualizar);

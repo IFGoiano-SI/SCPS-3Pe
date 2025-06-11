@@ -18,11 +18,30 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 public class LoginView {
     private static UsuarioManager usuarioManager = new UsuarioManager();
     
     public static void main(String[] args) {
+        /**São usados 3 métodos Para definir o visual do Swing de acordo com o sistema operacional:
+
+         UIManager.setLookAndFeel: modifica o visual do Swing.
+         UIManager.getSystemLookAndFeelClassName: retorna o visual do sistema operacional em questão (o nome da classe que representa esse visual).
+         SwingUtilities.updateComponentTreeUI: aplica o visual em todas as UI que forem abertas a partir daquela.
+         */
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            SwingUtilities.updateComponentTreeUI(new JFrame());
+        } catch (UnsupportedLookAndFeelException e) {
+            // Se o look and feel não for suportado, usa o padrão
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         SwingUtilities.invokeLater(() -> {
             createAndShowGUI();
         });
