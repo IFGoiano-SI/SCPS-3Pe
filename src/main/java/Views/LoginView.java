@@ -50,7 +50,7 @@ public class LoginView {
     private static void createAndShowGUI() {
         JFrame frame = new JFrame("Sistema de Controle de Prestação de Serviços - Login");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(450, 350);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLocationRelativeTo(null);
         
         JPanel mainPanel = new JPanel(new BorderLayout());

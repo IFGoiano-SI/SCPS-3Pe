@@ -16,7 +16,7 @@ public class UsuarioDAO implements DAO<Usuario> {
     public int inserir(Usuario usuario) {
         String sql = "INSERT INTO usuario (nome_usuario, senha, tipo_usuario) VALUES (?, SHA1(?), ?)";
         try (Connection connection = new ConexaoDB().getConexao();
-             PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, usuario.getNomeUsuario());
             stmt.setString(2, usuario.getSenha());
             stmt.setString(3, usuario.getTipoUsuario());
@@ -37,9 +37,26 @@ public class UsuarioDAO implements DAO<Usuario> {
 
     @Override
     public boolean atualizar(Usuario usuario) {
+        String sql = "UPDATE usuario SET nome_usuario = ?, tipo_usuario = ?, ativo = ? WHERE id_usuario = ? AND ativo = 1";
+        try (Connection connection = new ConexaoDB().getConexao();
+                PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, usuario.getNomeUsuario());
+            stmt.setString(2, usuario.getTipoUsuario());
+            stmt.setInt(3, usuario.getAtivo());
+            stmt.setInt(4, usuario.getIdUsuario());
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Erro ao atualizar usuário: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean atualizar(Usuario usuario, boolean senhaAlterada) {
         String sql = "UPDATE usuario SET nome_usuario = ?, senha = SHA1(?), tipo_usuario = ?, ativo = ? WHERE id_usuario = ? AND ativo = 1";
         try (Connection connection = new ConexaoDB().getConexao();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
+                PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, usuario.getNomeUsuario());
             stmt.setString(2, usuario.getSenha());
             stmt.setString(3, usuario.getTipoUsuario());
@@ -57,7 +74,7 @@ public class UsuarioDAO implements DAO<Usuario> {
     public boolean remover(int id) {
         String sql = "DELETE FROM usuario WHERE id_usuario = ?";
         try (Connection connection = new ConexaoDB().getConexao();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
+                PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
             return true;
@@ -71,7 +88,7 @@ public class UsuarioDAO implements DAO<Usuario> {
     public Usuario buscarPorId(int id) {
         String sql = "SELECT * FROM usuario WHERE id_usuario = ? AND ativo = 1";
         try (Connection connection = new ConexaoDB().getConexao();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
+                PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -81,8 +98,7 @@ public class UsuarioDAO implements DAO<Usuario> {
                             rs.getString("senha"),
                             rs.getString("tipo_usuario"),
                             rs.getTimestamp("created_at").toLocalDateTime(),
-                            rs.getTimestamp("updated_at").toLocalDateTime()
-                    );
+                            rs.getTimestamp("updated_at").toLocalDateTime());
                 }
             }
         } catch (SQLException e) {
@@ -96,16 +112,15 @@ public class UsuarioDAO implements DAO<Usuario> {
         String sql = "SELECT * FROM usuario WHERE ativo = 1";
         List<Usuario> usuarios = new ArrayList<>();
         try (Connection connection = new ConexaoDB().getConexao();
-             PreparedStatement stmt = connection.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+                PreparedStatement stmt = connection.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 usuarios.add(new Usuario(
                         rs.getInt("id_usuario"),
                         rs.getString("nome_usuario"),
                         rs.getString("tipo_usuario"),
                         rs.getTimestamp("created_at").toLocalDateTime(),
-                        rs.getTimestamp("updated_at").toLocalDateTime()
-                ));
+                        rs.getTimestamp("updated_at").toLocalDateTime()));
             }
         } catch (SQLException e) {
             System.err.println("Erro ao listar todos os usuários: " + e.getMessage());
@@ -116,7 +131,7 @@ public class UsuarioDAO implements DAO<Usuario> {
     public Usuario buscarPorNomeESenha(String nomeUsuario, String senha) {
         String sql = "SELECT * FROM usuario WHERE UPPER(nome_usuario) = UPPER(?) AND senha = SHA1(?) AND ativo = 1";
         try (Connection connection = new ConexaoDB().getConexao();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
+                PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, nomeUsuario);
             stmt.setString(2, senha);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -127,8 +142,7 @@ public class UsuarioDAO implements DAO<Usuario> {
                             rs.getString("senha"),
                             rs.getString("tipo_usuario"),
                             rs.getTimestamp("created_at").toLocalDateTime(),
-                            rs.getTimestamp("updated_at").toLocalDateTime()
-                    );
+                            rs.getTimestamp("updated_at").toLocalDateTime());
                 }
             }
         } catch (SQLException e) {

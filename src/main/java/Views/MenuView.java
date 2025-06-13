@@ -29,7 +29,7 @@ public class MenuView extends JFrame {
     private void initializeComponents() {
         setTitle("Sistema de Controle de Prestação de Serviços - Menu Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 400);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 

@@ -30,7 +30,7 @@ public class FuncionarioView extends JFrame {
     private JTextField txtRua, txtNumero, txtBairro, txtCidade, txtEstado, txtCep;
     private JTextField txtNomeUsuario, txtSenha;
     private JComboBox<String> cbTipoUsuario;
-    private JButton btnNovo, btnSalvar, btnAtualizar, btnExcluir, btnLimpar;
+    private JButton btnNovo, btnSalvar, btnAtualizar, btnExcluir, btnLimpar, btnVoltar;
     
     private Funcionario funcionarioSelecionado;
     
@@ -46,7 +46,7 @@ public class FuncionarioView extends JFrame {
     private void initializeComponents() {
         setTitle("Gerenciar Funcionários");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(1200, 700);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         
@@ -232,6 +232,11 @@ public class FuncionarioView extends JFrame {
         btnAtualizar = new JButton("Atualizar");
         btnExcluir = new JButton("Excluir");
         btnLimpar = new JButton("Limpar");
+        btnVoltar = new JButton("Voltar para Menu");
+        btnVoltar.addActionListener(e -> {
+            dispose(); // Fecha a janela atual
+        });
+        
         // Estilizar botões
         btnNovo.setBackground(new Color(0, 123, 255));
 //        btnNovo.setForeground(Color.WHITE);
@@ -247,11 +252,14 @@ public class FuncionarioView extends JFrame {
         
         btnLimpar.setBackground(new Color(108, 117, 125));
 //        btnLimpar.setForeground(Color.WHITE);
+
+        btnVoltar.setBackground(new Color(14, 0, 0));
         panel.add(btnNovo);
         panel.add(btnSalvar);
         panel.add(btnAtualizar);
         panel.add(btnExcluir);
         panel.add(btnLimpar);
+        panel.add(btnVoltar);
         
         return panel;
     }

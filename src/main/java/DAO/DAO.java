@@ -25,6 +25,18 @@ package DAO;
          */
         boolean atualizar(T entidade);
 
+        //criar um metodo opcional para atualizar com senha alterada
+        /**
+         * Atualiza os dados de uma entidade existente no banco de dados, com a opção de alterar a senha.
+         *
+         * @param entidade Entidade com os dados atualizados.
+         * @param senhaAlterada Indica se a senha foi alterada.
+         * @return true se a entidade for atualizada com sucesso, false caso contrário.
+         */
+        default boolean atualizar(T entidade, boolean senhaAlterada){
+            return false; // Implementação padrão, pode ser sobrescrita por subclasses
+        };
+
         /**
          * Remove uma entidade do banco de dados com base no identificador fornecido.
          *
