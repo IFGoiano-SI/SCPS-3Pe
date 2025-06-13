@@ -58,8 +58,8 @@ public class LoginView {
         // Header Panel
         JPanel headerPanel = new JPanel();
         JLabel titleLabel = new JLabel("SISTEMA DE CONTROLE DE PRESTAÇÃO DE SERVIÇOS", JLabel.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        titleLabel.setForeground(new Color(0, 102, 204));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        titleLabel.setForeground(new Color(25,25,112));
         headerPanel.add(titleLabel);
         
         // Form Panel
@@ -110,7 +110,7 @@ public class LoginView {
         JButton loginButton = new JButton("Entrar");
         loginButton.setFont(new Font("Arial", Font.BOLD, 14));
         loginButton.setBackground(new Color(0, 102, 204));
-        loginButton.setForeground(Color.WHITE);
+//        loginButton.setForeground(Color.WHITE);
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 2;

@@ -11,9 +11,11 @@ import DAO.UsuarioDAO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
 import java.util.List;
 
 public class FuncionarioView extends JFrame {
@@ -536,5 +538,19 @@ public class FuncionarioView extends JFrame {
             
             new FuncionarioView().setVisible(true);
         });
+    }
+
+    // Classe utilitária para máscaras de campos
+    public static MaskFormatter mascara(String mascara) {
+
+        MaskFormatter F_Mascara = new MaskFormatter();
+        try {
+
+            F_Mascara.setMask(mascara); //Atribui a mascara
+            F_Mascara.setPlaceholderCharacter(' '); //Caracter para preencimento
+        } catch (ParseException excecao) {
+            System.out.println(excecao.getMessage());
+        }
+        return F_Mascara;
     }
 }
