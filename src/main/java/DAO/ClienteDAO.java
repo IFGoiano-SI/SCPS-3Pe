@@ -42,14 +42,15 @@ public class ClienteDAO implements DAO<Cliente> {
 
     @Override
     public boolean atualizar(Cliente cliente) {
-        String sql = "UPDATE cliente SET nome = ?, telefone = ?, email = ?, id_endereco = ? WHERE id_cliente = ?";
+        String sql = "UPDATE cliente SET nome = ?, telefone = ?, email = ?, id_endereco = ?, ativo = ? WHERE id_cliente = ? AND ativo = 1";
         try (Connection connection = new ConexaoDB().getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, cliente.getNome());
             stmt.setString(2, cliente.getTelefone());
             stmt.setString(3, cliente.getEmail());
             stmt.setInt(4, cliente.getEndereco().getId());
-            stmt.setInt(5, cliente.getIdCliente());
+            stmt.setInt(5, cliente.getAtivo());
+            stmt.setInt(6, cliente.getIdCliente());
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -74,7 +75,7 @@ public class ClienteDAO implements DAO<Cliente> {
 
     @Override
     public Cliente buscarPorId(int id) {
-        String sql = "SELECT * FROM cliente WHERE id_cliente = ?";
+        String sql = "SELECT * FROM cliente WHERE id_cliente = ? AND ativo = 1";
         try (Connection connection = new ConexaoDB().getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -100,7 +101,7 @@ public class ClienteDAO implements DAO<Cliente> {
 
     @Override
     public List<Cliente> listarTodos() {
-        String sql = "SELECT * FROM cliente";
+        String sql = "SELECT * FROM cliente WHERE ativo = 1";
         List<Cliente> clientes = new ArrayList<>();
         try (Connection connection = new ConexaoDB().getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql);

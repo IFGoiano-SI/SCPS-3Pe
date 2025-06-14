@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
  */
 public class Cliente extends PessoaAbstract {
     private int idCliente;
+    private int ativo = 1;
 
     /**
      * Construtor padrão.
@@ -52,6 +53,24 @@ public class Cliente extends PessoaAbstract {
     @Override
     public String getTipoPessoa() {
         return "Cliente";}
+
+    /**
+     * Obtém o status de ativo do funcionário.
+     *
+     * @return O status de ativo do funcionário.
+     */
+    public int getAtivo() {
+        return ativo;
+    }
+
+    /**
+     * Define o status de ativo do funcionário.
+     *
+     * @param ativo O novo status de ativo do funcionário.
+     */
+    public void setAtivo(int ativo) {
+        this.ativo = ativo;
+    }
 
     /**
      * Sobrescrita do método {@code toString} para retornar os dados do cliente.
