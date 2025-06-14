@@ -1,7 +1,5 @@
 package Views;
 
-import Manager.FuncionarioManager;
-import Manager.UsuarioManager;
 import Entidades.Funcionario;
 import Entidades.Endereco;
 import Entidades.Usuario;
@@ -13,11 +11,13 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.util.List;
 
+/**
+ * Classe responsável pela interface gráfica de gerenciamento de funcionários.
+ * Permite criar, editar, excluir e listar funcionários no sistema.
+ */
 public class FuncionarioView extends JFrame {
     private FuncionarioDAO funcionarioDAO;
     private EnderecoDAO enderecoDAO;
@@ -26,14 +26,17 @@ public class FuncionarioView extends JFrame {
     // Componentes da interface
     private JTable tabelaFuncionarios;
     private DefaultTableModel modeloTabela;
-    private JTextField txtNome, txtCargo, txtTelefone, txtEmail;
-    private JTextField txtRua, txtNumero, txtBairro, txtCidade, txtEstado, txtCep;
+    private JTextField txtNome, txtCargo, txtEmail;
+    private JFormattedTextField txtTelefone; // Campo com máscara
+    private JTextField txtRua, txtNumero, txtBairro, txtCidade, txtEstado;
+    private JFormattedTextField txtCep; // Campo com máscara
     private JTextField txtNomeUsuario, txtSenha;
     private JComboBox<String> cbTipoUsuario;
     private JButton btnNovo, btnSalvar, btnAtualizar, btnExcluir, btnLimpar, btnVoltar;
     
     private Funcionario funcionarioSelecionado;
-    
+
+    // Construtor da classe FuncionarioView
     public FuncionarioView() {
         this.funcionarioDAO = new FuncionarioDAO();
         this.enderecoDAO = new EnderecoDAO();
@@ -42,7 +45,8 @@ public class FuncionarioView extends JFrame {
         initializeComponents();
         carregarFuncionarios();
     }
-    
+
+    // Método para inicializar os componentes da interface gráfica
     private void initializeComponents() {
         setTitle("Gerenciar Funcionários");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -72,7 +76,8 @@ public class FuncionarioView extends JFrame {
         // Configurar ações dos botões
         configurarAcoes();
     }
-    
+
+    // Método para criar o painel do formulário de cadastro/edição de funcionário
     private JPanel createFormPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -99,12 +104,18 @@ public class FuncionarioView extends JFrame {
         gbc.gridx = 1;
         txtCargo = new JTextField(20);
         dadosPessoais.add(txtCargo, gbc);
-        
+
         // Telefone
         gbc.gridx = 0; gbc.gridy = 2;
         dadosPessoais.add(new JLabel("Telefone:"), gbc);
         gbc.gridx = 1;
-        txtTelefone = new JTextField(20);
+        try {
+            txtTelefone = new JFormattedTextField(mascara("(##) #####-####"));
+            txtTelefone.setColumns(20);
+        } catch (Exception e) {
+            txtTelefone = new JFormattedTextField();
+            txtTelefone.setColumns(20);
+        }
         dadosPessoais.add(txtTelefone, gbc);
         
         // Email
@@ -148,7 +159,7 @@ public class FuncionarioView extends JFrame {
         
         // Estado
         gbc.gridx = 0; gbc.gridy = 4;
-        enderecoPanel.add(new JLabel("Estado:"), gbc);
+        enderecoPanel.add(new JLabel("Estado (UF):"), gbc);
         gbc.gridx = 1;
         txtEstado = new JTextField(20);
         enderecoPanel.add(txtEstado, gbc);
@@ -157,7 +168,13 @@ public class FuncionarioView extends JFrame {
         gbc.gridx = 0; gbc.gridy = 5;
         enderecoPanel.add(new JLabel("CEP:"), gbc);
         gbc.gridx = 1;
-        txtCep = new JTextField(20);
+        try {
+            txtCep = new JFormattedTextField(mascara("#####-###"));
+            txtCep.setColumns(20);
+        } catch (Exception e) {
+            txtCep = new JFormattedTextField();
+            txtCep.setColumns(20);
+        }
         enderecoPanel.add(txtCep, gbc);
         
         // Dados do usuário
@@ -194,7 +211,8 @@ public class FuncionarioView extends JFrame {
         
         return panel;
     }
-    
+
+    // Método para criar o painel da tabela de funcionários
     private JPanel createTablePanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createTitledBorder("Lista de Funcionários"));
@@ -223,7 +241,8 @@ public class FuncionarioView extends JFrame {
         
         return panel;
     }
-    
+
+    // Método para criar o painel dos botões de ação
     private JPanel createButtonPanel() {
         JPanel panel = new JPanel(new FlowLayout());
         
@@ -263,7 +282,8 @@ public class FuncionarioView extends JFrame {
         
         return panel;
     }
-    
+
+    // Método para configurar as ações dos botões
     private void configurarAcoes() {
         btnNovo.addActionListener(e -> novoFuncionario());
         btnSalvar.addActionListener(e -> salvarFuncionario());
@@ -271,7 +291,8 @@ public class FuncionarioView extends JFrame {
         btnExcluir.addActionListener(e -> excluirFuncionario());
         btnLimpar.addActionListener(e -> limparCampos());
     }
-    
+
+    // Método para criar um novo funcionário
     private void novoFuncionario() {
         limparCampos();
         funcionarioSelecionado = null;
@@ -280,7 +301,8 @@ public class FuncionarioView extends JFrame {
         btnExcluir.setEnabled(false);
         txtNome.requestFocus();
     }
-    
+
+    // Método para salvar ou atualizar um funcionário
     private void salvarFuncionario() {
         if (!validarCampos()) return;
         
@@ -291,7 +313,7 @@ public class FuncionarioView extends JFrame {
             endereco.setNumero(txtNumero.getText().trim());
             endereco.setBairro(txtBairro.getText().trim());
             endereco.setCidade(txtCidade.getText().trim());
-            endereco.setEstado(txtEstado.getText().trim());
+            endereco.setEstado(txtEstado.getText().trim().toUpperCase());
             endereco.setCep(txtCep.getText().trim());
             
             // Inserir endereço no banco
@@ -339,7 +361,8 @@ public class FuncionarioView extends JFrame {
             JOptionPane.showMessageDialog(this, "Erro ao salvar funcionário: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
+    // Método para atualizar os dados de um funcionário selecionado
     private void atualizarFuncionario() {
         if (funcionarioSelecionado == null) {
             JOptionPane.showMessageDialog(this, "Selecione um funcionário para atualizar!", "Aviso", JOptionPane.WARNING_MESSAGE);
@@ -361,7 +384,7 @@ public class FuncionarioView extends JFrame {
             endereco.setNumero(txtNumero.getText().trim());
             endereco.setBairro(txtBairro.getText().trim());
             endereco.setCidade(txtCidade.getText().trim());
-            endereco.setEstado(txtEstado.getText().trim());
+            endereco.setEstado(txtEstado.getText().trim().toUpperCase());
             endereco.setCep(txtCep.getText().trim());
             
             // Atualizar usuário (apenas nome de usuário e tipo)
@@ -388,7 +411,8 @@ public class FuncionarioView extends JFrame {
             JOptionPane.showMessageDialog(this, "Erro ao atualizar funcionário: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
+    // Método para excluir (inativar) um funcionário selecionado
     private void excluirFuncionario() {
         if (funcionarioSelecionado == null) {
             JOptionPane.showMessageDialog(this, "Selecione um funcionário para excluir!", "Aviso", JOptionPane.WARNING_MESSAGE);
@@ -422,7 +446,8 @@ public class FuncionarioView extends JFrame {
             }
         }
     }
-    
+
+    // Método para selecionar um funcionário da tabela e preencher os campos do formulário
     private void selecionarFuncionario() {
         int linha = tabelaFuncionarios.getSelectedRow();
         if (linha >= 0) {
@@ -437,7 +462,8 @@ public class FuncionarioView extends JFrame {
             }
         }
     }
-    
+
+    // Método para preencher os campos do formulário com os dados do funcionário selecionado
     private void preencherCampos(Funcionario funcionario) {
         txtNome.setText(funcionario.getNome());
         txtCargo.setText(funcionario.getCargo());
@@ -463,7 +489,8 @@ public class FuncionarioView extends JFrame {
             txtSenha.setText(""); // Não mostrar senha por segurança
         }
     }
-    
+
+    // Método para limpar os campos do formulário
     private void limparCampos() {
         txtNome.setText("");
         txtCargo.setText("");
@@ -486,20 +513,81 @@ public class FuncionarioView extends JFrame {
         tabelaFuncionarios.clearSelection();
         funcionarioSelecionado = null;
     }
-    
+
+    // Método para validar os campos do formulário antes de salvar ou atualizar
     private boolean validarCampos() {
+
+        // Nome
         if (txtNome.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Nome é obrigatório!", "Validação", JOptionPane.WARNING_MESSAGE);
             txtNome.requestFocus();
             return false;
         }
-        
+
+        // Cargo
         if (txtCargo.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Cargo é obrigatório!", "Validação", JOptionPane.WARNING_MESSAGE);
             txtCargo.requestFocus();
             return false;
         }
-        
+
+        // Telefone
+        if (txtTelefone.getText().trim().isEmpty() || txtTelefone.getText().trim().equals("(  )      -    ")) {
+            JOptionPane.showMessageDialog(this, "Telefone é obrigatório!", "Validação", JOptionPane.WARNING_MESSAGE);
+            txtTelefone.requestFocus();
+            return false;
+        }
+
+        // E-mail
+        if (txtEmail.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "E-mail é obrigatório!", "Validação", JOptionPane.WARNING_MESSAGE);
+            txtEmail.requestFocus();
+            return false;
+        }
+
+        // Rua
+        if (txtRua.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Rua é obrigatória!", "Validação", JOptionPane.WARNING_MESSAGE);
+            txtRua.requestFocus();
+            return false;
+        }
+
+        // Número
+        if (txtNumero.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Número é obrigatório!", "Validação", JOptionPane.WARNING_MESSAGE);
+            txtNumero.requestFocus();
+            return false;
+        }
+
+        // Bairro
+        if (txtBairro.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Bairro é obrigatório!", "Validação", JOptionPane.WARNING_MESSAGE);
+            txtBairro.requestFocus();
+            return false;
+        }
+
+        // Cidade
+        if (txtCidade.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Cidade é obrigatória!", "Validação", JOptionPane.WARNING_MESSAGE);
+            txtCidade.requestFocus();
+            return false;
+        }
+
+        // Estado
+        if (txtEstado.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Estado é obrigatório!", "Validação", JOptionPane.WARNING_MESSAGE);
+            txtEstado.requestFocus();
+            return false;
+        }
+
+        // CEP
+        if (txtCep.getText().trim().isEmpty() || txtCep.getText().trim().equals("     -   ")) {
+            JOptionPane.showMessageDialog(this, "CEP é obrigatório!", "Validação", JOptionPane.WARNING_MESSAGE);
+            txtCep.requestFocus();
+            return false;
+        }
+
+        // Nome Usuário
         if (txtNomeUsuario.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Nome de usuário é obrigatório!", "Validação", JOptionPane.WARNING_MESSAGE);
             txtNomeUsuario.requestFocus();
@@ -515,7 +603,8 @@ public class FuncionarioView extends JFrame {
         
         return true;
     }
-    
+
+    // Método para carregar a lista de funcionários na tabela
     private void carregarFuncionarios() {
         modeloTabela.setRowCount(0);
         try {
@@ -535,7 +624,8 @@ public class FuncionarioView extends JFrame {
             JOptionPane.showMessageDialog(this, "Erro ao carregar funcionários: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
+    // Método principal para iniciar a aplicação
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
@@ -550,14 +640,12 @@ public class FuncionarioView extends JFrame {
 
     // Classe utilitária para máscaras de campos
     public static MaskFormatter mascara(String mascara) {
-
-        MaskFormatter F_Mascara = new MaskFormatter();
+        MaskFormatter F_Mascara = null;
         try {
-
-            F_Mascara.setMask(mascara); //Atribui a mascara
-            F_Mascara.setPlaceholderCharacter(' '); //Caracter para preencimento
+            F_Mascara = new MaskFormatter(mascara);
+            F_Mascara.setPlaceholderCharacter('_');
         } catch (ParseException excecao) {
-            System.out.println(excecao.getMessage());
+            System.out.println("Erro ao criar máscara: " + excecao.getMessage());
         }
         return F_Mascara;
     }

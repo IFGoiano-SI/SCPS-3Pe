@@ -58,7 +58,7 @@ public class LoginView {
         // Header Panel
         JPanel headerPanel = new JPanel();
         JLabel titleLabel = new JLabel("SISTEMA DE CONTROLE DE PRESTAÇÃO DE SERVIÇOS", JLabel.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         titleLabel.setForeground(new Color(25,25,112));
         headerPanel.add(titleLabel);
         

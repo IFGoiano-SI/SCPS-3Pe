@@ -120,7 +120,10 @@ public class MenuView extends JFrame {
                     });
                     break;
                 case "Cliente":
-                    JOptionPane.showMessageDialog(this, "Funcionalidade de cadastro de cliente em desenvolvimento");
+                    SwingUtilities.invokeLater(() -> {
+                        ClienteView clienteView = new ClienteView();
+                        clienteView.setVisible(true);
+                    });
                     break;
                 case "Usuário":
                     JOptionPane.showMessageDialog(this, "Funcionalidade de cadastro de usuário em desenvolvimento");
