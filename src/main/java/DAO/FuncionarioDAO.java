@@ -107,6 +107,34 @@ public class FuncionarioDAO implements DAO<Funcionario> {
         return null;
     }
 
+    public Funcionario buscarPorIdIncluindoInativos(int id) {
+        String sql = "SELECT * FROM funcionario WHERE id_funcionario = ?";
+        try (Connection connection = new ConexaoDB().getConexao();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Endereco endereco = new EnderecoDAO().buscarPorId(rs.getInt("id_endereco"));
+                    Usuario usuario = new UsuarioDAO().buscarPorId(rs.getInt("id_usuario"));
+                    return new Funcionario(
+                            rs.getInt("id_funcionario"),
+                            rs.getString("nome"),
+                            rs.getString("telefone"),
+                            rs.getString("email"),
+                            endereco,
+                            rs.getString("cargo"),
+                            usuario,
+                            rs.getTimestamp("created_at").toLocalDateTime(),
+                            rs.getTimestamp("updated_at").toLocalDateTime()
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar funcionário por ID (incluindo inativos): " + e.getMessage());
+        }
+        return null;
+    }
+
     @Override
     public List<Funcionario> listarTodos() {
         String sql = "SELECT * FROM funcionario WHERE ativo = 1";

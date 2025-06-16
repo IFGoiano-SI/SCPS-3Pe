@@ -133,32 +133,10 @@ public class MenuView extends JFrame {
     }
 
     private void abrirMenuOrdemServicos() {
-        String[] opcoes = { "Nova Ordem", "Consultar Ordem", "Atualizar Ordem", "Listar Ordens" };
-        String escolha = (String) JOptionPane.showInputDialog(
-                this,
-                "Escolha uma opção:",
-                "Menu de Ordem de Serviços",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opcoes,
-                opcoes[0]);
-
-        if (escolha != null) {
-            switch (escolha) {
-                case "Nova Ordem":
-                    JOptionPane.showMessageDialog(this, "Funcionalidade de nova ordem em desenvolvimento");
-                    break;
-                case "Consultar Ordem":
-                    JOptionPane.showMessageDialog(this, "Funcionalidade de consultar ordem em desenvolvimento");
-                    break;
-                case "Atualizar Ordem":
-                    JOptionPane.showMessageDialog(this, "Funcionalidade de atualizar ordem em desenvolvimento");
-                    break;
-                case "Listar Ordens":
-                    JOptionPane.showMessageDialog(this, "Funcionalidade de listar ordens em desenvolvimento");
-                    break;
-            }
-        }
+        SwingUtilities.invokeLater(() -> {
+            OrdemServicoView ordemServicoView = new OrdemServicoView();
+            ordemServicoView.setVisible(true);
+        });
     }
 
     private void logout() {

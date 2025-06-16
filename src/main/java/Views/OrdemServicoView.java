@@ -8,7 +8,10 @@ import DAO.UsuarioDAO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.MaskFormatter;
+import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.text.ParseException;
 import java.util.List;
@@ -28,7 +31,7 @@ public class OrdemServicoView extends JFrame {
     // Componentes da interface
     private JTable tabelaOrdemServico;
     private DefaultTableModel modeloTabela;
-    private JTextField txtDescricao, txtDtCoclusao, txtValorPago;
+    private JTextField txtDescricao, txtValorPago;
     private JComboBox<OrdemServico.Status> statusComboBox;
     private JComboBox<Cliente> clienteComboBox;
     private JComboBox<Funcionario> funcionarioComboBox;
@@ -99,47 +102,64 @@ public class OrdemServicoView extends JFrame {
         infoOS.add(txtDescricao, gbc);
 
         // Status
-        gbc.gridx = 1; gbc.gridy = 1;
-        infoOS.add(new JLabel("Status:"));
+        gbc.gridx = 0; gbc.gridy = 1;
+        infoOS.add(new JLabel("Status:"), gbc);
+        gbc.gridx = 1;
         statusComboBox = new JComboBox<>(OrdemServico.Status.values());
-        gbc.gridx = 1;
-        infoOS.add(statusComboBox);
-
-        // Data Conlusao
-        gbc.gridx = 0; gbc.gridy = 2;
-        infoOS.add(new JLabel("Data de Conclusão:"), gbc);
-        gbc.gridx = 1;
-        txtDtCoclusao = new JTextField(20);
-        infoOS.add(txtDtCoclusao, gbc);
+        statusComboBox.setSelectedItem(OrdemServico.Status.ABERTO); // Definir como ABERTO por padrão
+        statusComboBox.setEnabled(false); // Desabilitar inicialmente
+        infoOS.add(statusComboBox, gbc);
 
         // Valor Pago
-        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.gridx = 0; gbc.gridy = 2;
         infoOS.add(new JLabel("Valor Pago:"), gbc);
         gbc.gridx = 1;
-        txtValorPago = new JTextField(6);
+        txtValorPago = new JTextField(20);
+        // Adicionar DocumentFilter para aceitar apenas números e pontos
+        txtValorPago.setDocument(new PlainDocument() {
+            @Override
+            public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+                if (str == null) return;
+
+                String currentText = getText(0, getLength());
+                String newText = currentText.substring(0, offs) + str + currentText.substring(offs);
+
+                // Permitir apenas números, um ponto e máximo 2 casas decimais
+                if (newText.matches("^\\d*\\.?\\d{0,2}$")) {
+                    super.insertString(offs, str, a);
+                }
+            }
+        });
         infoOS.add(txtValorPago, gbc);
 
         // Cliente Relacionado
         JPanel clientePanel = new JPanel(new GridBagLayout());
         clientePanel.setBorder(BorderFactory.createTitledBorder("Cliente Relacionado"));
-        gbc.insets = new Insets(10, 10, 5, 10);
-        gbc.anchor = GridBagConstraints.WEST;
+        GridBagConstraints gbcCliente = new GridBagConstraints();
+        gbcCliente.insets = new Insets(10, 10, 5, 10);
+        gbcCliente.anchor = GridBagConstraints.WEST;
 
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbcCliente.gridx = 0; gbcCliente.gridy = 0;
+        clientePanel.add(new JLabel("Cliente:"), gbcCliente);
+        gbcCliente.gridx = 1;
         clienteComboBox = new JComboBox<>();
         carregarClientes();
-        clientePanel.add(clienteComboBox, gbc);
+        clientePanel.add(clienteComboBox, gbcCliente);
 
         // Funcionário Relacionado
         JPanel funcionarioPanel = new JPanel(new GridBagLayout());
-        funcionarioPanel.setBorder(BorderFactory.createTitledBorder("Funcionario Relacionado"));
-        gbc.insets = new Insets(10, 10, 5, 10);
-        gbc.anchor = GridBagConstraints.WEST;
+        funcionarioPanel.setBorder(BorderFactory.createTitledBorder("Funcionário Relacionado"));
+        GridBagConstraints gbcFuncionario = new GridBagConstraints();
+        gbcFuncionario.insets = new Insets(10, 10, 5, 10);
+        gbcFuncionario.anchor = GridBagConstraints.WEST;
 
-        gbc.gridx = 0; gbc.gridy = 0;
+
+        gbcFuncionario.gridx = 0; gbcFuncionario.gridy = 0;
+        funcionarioPanel.add(new JLabel("Funcionário:"), gbcFuncionario);
+        gbcFuncionario.gridx = 1;
         funcionarioComboBox = new JComboBox<>();
         carregarFuncionarios();
-        funcionarioPanel.add(funcionarioComboBox, gbc);
+        funcionarioPanel.add(funcionarioComboBox, gbcFuncionario);
 
         ordemPanel.add(infoOS);
         ordemPanel.add(Box.createVerticalStrut(10));
@@ -234,6 +254,8 @@ public class OrdemServicoView extends JFrame {
     private void novaOrdemServico() {
         limparCampos();
         osSelecionada = null;
+        statusComboBox.setSelectedItem(OrdemServico.Status.ABERTO);
+        statusComboBox.setEnabled(false);
         btnSalvar.setEnabled(true);
         btnAtualizar.setEnabled(false);
         btnExcluir.setEnabled(false);
@@ -251,17 +273,13 @@ public class OrdemServicoView extends JFrame {
             // Escolher Funcionario já cadastrado
             Funcionario funcEscolhido = (Funcionario) funcionarioComboBox.getSelectedItem();
 
-            // Data de Conclusão
-            LocalDateTime dtConc = LocalDateTime.parse(txtDtCoclusao.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
-
             // Criar Ordem de Serviço
             OrdemServico os = new OrdemServico();
             os.setDescricao(txtDescricao.getText().trim());
-                //Status é gerado padrão como "Aberto"
+            //Status é gerado padrão como "Aberto"
             os.setCliente(clienteEscolhido);
             os.setFuncionario(funcEscolhido);
             os.setDataAbertura(LocalDateTime.now());
-            os.setDataConclusao(dtConc);
 
             // Inserir Ordem de Serviço no banco
             int idOrdemServico = dao.inserir(os);
@@ -284,16 +302,28 @@ public class OrdemServicoView extends JFrame {
             JOptionPane.showMessageDialog(this, "Selecione uma Ordem de Serviço para atualizar!", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        // Verifica se a OS selecionada está cancelada ou concluída
+        if (osSelecionada.getStatus() == OrdemServico.Status.CANCELADA) {
+            JOptionPane.showMessageDialog(this, "Não é possível atualizar ordens Canceladas!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (osSelecionada.getStatus() == OrdemServico.Status.CONCLUIDA) {
+            JOptionPane.showMessageDialog(this, "Não é possível atualizar ordens Concluidas!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         if (!validarCampos()) return;
 
         try {
             // Atualizar dados da Ordem de Serviço
             osSelecionada.setDescricao(txtDescricao.getText().trim());
-            osSelecionada.setStatus((OrdemServico.Status) statusComboBox.getSelectedItem());//Sugestão do InteliJ
-            //osSelecionada.setCliente(clienteEscolhido);
-            //osSelecionada.setFuncionario(funcEscolhido);
-            osSelecionada.setDataConclusao(LocalDateTime.parse(txtDtCoclusao.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+            OrdemServico.Status novoStatus = (OrdemServico.Status) statusComboBox.getSelectedItem();
+            osSelecionada.setStatus(novoStatus);
+
+            // Se o status foi alterado para CONCLUIDA, definir data de conclusão automaticamente
+            if (novoStatus == OrdemServico.Status.CONCLUIDA && osSelecionada.getDataConclusao() == null) {
+                osSelecionada.setDataConclusao(LocalDateTime.now());
+            }
 
             // Salvar no banco
             if (dao.atualizar(osSelecionada)) {
@@ -314,6 +344,10 @@ public class OrdemServicoView extends JFrame {
     private void excluirOrdemServico() {
         if (osSelecionada == null) {
             JOptionPane.showMessageDialog(this, "Selecione uma Ordem de Serviço para excluir!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (osSelecionada.getStatus() != OrdemServico.Status.ABERTO) {
+            JOptionPane.showMessageDialog(this, "Só é possível excluir ordens de serviço em aberto.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -354,6 +388,7 @@ public class OrdemServicoView extends JFrame {
 
             if (osSelecionada != null) {
                 preencherCampos(osSelecionada);
+                statusComboBox.setEnabled(true);
                 btnSalvar.setEnabled(false);
                 btnAtualizar.setEnabled(true);
                 btnExcluir.setEnabled(true);
@@ -365,15 +400,14 @@ public class OrdemServicoView extends JFrame {
     private void preencherCampos(OrdemServico os) {
         txtDescricao.setText(os.getDescricao());
         statusComboBox.setSelectedItem(os.getStatus());
-        txtDtCoclusao.setText(os.getDataConclusao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
-        txtValorPago.setText(String.valueOf(os.getValorPago()));
+        txtValorPago.setText(String.format("%.2f", os.getValorPago()));
     }
 
     // Método para limpar os campos do formulário
     private void limparCampos() {
         txtDescricao.setText("");
-        statusComboBox.setSelectedIndex(0);
-        txtDtCoclusao.setText("");
+        statusComboBox.setSelectedItem(OrdemServico.Status.ABERTO);
+        statusComboBox.setEnabled(false);
         txtValorPago.setText("");
 
         btnSalvar.setEnabled(true);
@@ -401,13 +435,6 @@ public class OrdemServicoView extends JFrame {
             return false;
         }
 
-        // Data de Conclusão
-        if (txtDtCoclusao.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Data de Conclusão é obrigatória!", "Validação", JOptionPane.WARNING_MESSAGE);
-            txtDtCoclusao.requestFocus();
-            return false;
-        }
-
         return true;
     }
 
@@ -419,13 +446,13 @@ public class OrdemServicoView extends JFrame {
             for (OrdemServico ordemservico : ordensServicos) {
                 Object[] linha = {
                         ordemservico.getIdOrdem(),
-                        ordemservico.getDataAbertura(),
-                        ordemservico.getDataConclusao(),
+                        ordemservico.getDataAbertura().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                        ordemservico.getDataConclusao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                         ordemservico.getStatus(),
                         ordemservico.getCliente().getNome(),
                         ordemservico.getFuncionario().getNome(),
                         ordemservico.getDescricao(),
-                        ordemservico.getValorPago()
+                        String.format("%.2f", ordemservico.getValorPago())
                 };
                 modeloTabela.addRow(linha);
             }

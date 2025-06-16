@@ -84,7 +84,7 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 Cliente cliente = new ClienteDAO().buscarPorId(rs.getInt("id_cliente"));
-                Funcionario funcionario = new FuncionarioDAO().buscarPorId(rs.getInt("id_funcionario"));
+                Funcionario funcionario = new FuncionarioDAO().buscarPorIdIncluindoInativos(rs.getInt("id_funcionario"));
                 OrdemServico.Status status = OrdemServico.Status.valueOf(rs.getString("status")); // Converte String para enum Status
                 String descricao = rs.getString("descricao");
                 return new OrdemServico(
@@ -113,7 +113,7 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Cliente cliente = new ClienteDAO().buscarPorId(rs.getInt("id_cliente"));
-                Funcionario funcionario = new FuncionarioDAO().buscarPorId(rs.getInt("id_funcionario"));
+                Funcionario funcionario = new FuncionarioDAO().buscarPorIdIncluindoInativos(rs.getInt("id_funcionario"));
                 OrdemServico.Status status = OrdemServico.Status.valueOf(rs.getString("status")); // Converte String para enum Status
                 String descricao = rs.getString("descricao");
                 ordens.add(new OrdemServico(
