@@ -4,7 +4,6 @@ import Entidades.*;
 import DAO.ClienteDAO;
 import DAO.OrdemServicoDAO;
 import DAO.FuncionarioDAO;
-import DAO.UsuarioDAO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -13,6 +12,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.MaskFormatter;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
+import java.awt.Component;
 import java.text.ParseException;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -26,7 +26,6 @@ public class OrdemServicoView extends JFrame {
     private OrdemServicoDAO ordemServicoDAO;
     private ClienteDAO clienteDAO;
     private FuncionarioDAO funcionarioDAO;
-    private UsuarioDAO usuarioDAO;
 
     // Componentes da interface
     private JTable tabelaOrdemServico;
@@ -37,13 +36,10 @@ public class OrdemServicoView extends JFrame {
     private JComboBox<Funcionario> funcionarioComboBox;
     private JButton btnNovo, btnSalvar, btnAtualizar, btnExcluir, btnLimpar, btnVoltar;
 
-    private OrdemServico osSelecionada;
-
-    // Construtor da classe OrdemServicoView
+    private OrdemServico osSelecionada;    // Construtor da classe OrdemServicoView
     public OrdemServicoView() {
         this.ordemServicoDAO = new OrdemServicoDAO();
         this.funcionarioDAO = new FuncionarioDAO();
-        this.usuarioDAO = new UsuarioDAO();
         this.clienteDAO = new ClienteDAO();
 
         initializeComponents();
@@ -137,12 +133,11 @@ public class OrdemServicoView extends JFrame {
         clientePanel.setBorder(BorderFactory.createTitledBorder("Cliente Relacionado"));
         GridBagConstraints gbcCliente = new GridBagConstraints();
         gbcCliente.insets = new Insets(10, 10, 5, 10);
-        gbcCliente.anchor = GridBagConstraints.WEST;
-
-        gbcCliente.gridx = 0; gbcCliente.gridy = 0;
+        gbcCliente.anchor = GridBagConstraints.WEST;        gbcCliente.gridx = 0; gbcCliente.gridy = 0;
         clientePanel.add(new JLabel("Cliente:"), gbcCliente);
         gbcCliente.gridx = 1;
         clienteComboBox = new JComboBox<>();
+        clienteComboBox.setRenderer(new ClienteComboBoxRenderer());
         carregarClientes();
         clientePanel.add(clienteComboBox, gbcCliente);
 
@@ -151,13 +146,11 @@ public class OrdemServicoView extends JFrame {
         funcionarioPanel.setBorder(BorderFactory.createTitledBorder("Funcionário Relacionado"));
         GridBagConstraints gbcFuncionario = new GridBagConstraints();
         gbcFuncionario.insets = new Insets(10, 10, 5, 10);
-        gbcFuncionario.anchor = GridBagConstraints.WEST;
-
-
-        gbcFuncionario.gridx = 0; gbcFuncionario.gridy = 0;
+        gbcFuncionario.anchor = GridBagConstraints.WEST;        gbcFuncionario.gridx = 0; gbcFuncionario.gridy = 0;
         funcionarioPanel.add(new JLabel("Funcionário:"), gbcFuncionario);
         gbcFuncionario.gridx = 1;
         funcionarioComboBox = new JComboBox<>();
+        funcionarioComboBox.setRenderer(new FuncionarioComboBoxRenderer());
         carregarFuncionarios();
         funcionarioPanel.add(funcionarioComboBox, gbcFuncionario);
 
@@ -263,14 +256,22 @@ public class OrdemServicoView extends JFrame {
     }
     OrdemServicoDAO dao = new OrdemServicoDAO();    // Método para salvar ou atualizar uma Ordem de Servico
     private void salvarOrdemServico() {
-        if (!validarCampos()) return;
-
-        try {
+        if (!validarCampos()) return;        try {
             // Escolher Cliente já cadastrado
             Cliente clienteEscolhido = (Cliente) clienteComboBox.getSelectedItem();
+            if (clienteEscolhido == null) {
+                JOptionPane.showMessageDialog(this, "Por favor, selecione um cliente!", "Validação", JOptionPane.WARNING_MESSAGE);
+                clienteComboBox.requestFocus();
+                return;
+            }
 
             // Escolher Funcionario já cadastrado
             Funcionario funcEscolhido = (Funcionario) funcionarioComboBox.getSelectedItem();
+            if (funcEscolhido == null) {
+                JOptionPane.showMessageDialog(this, "Por favor, selecione um funcionário!", "Validação", JOptionPane.WARNING_MESSAGE);
+                funcionarioComboBox.requestFocus();
+                return;
+            }
 
             // Obter e validar o valor pago
             double valorPago = 0.0;
@@ -346,10 +347,21 @@ public class OrdemServicoView extends JFrame {
             osSelecionada.setValorPago(valorPago); // Atualizar o valor pago
             OrdemServico.Status novoStatus = (OrdemServico.Status) statusComboBox.getSelectedItem();
             osSelecionada.setStatus(novoStatus);
-            
-            // Atualizar cliente e funcionário selecionados
+              // Atualizar cliente e funcionário selecionados
             Cliente clienteEscolhido = (Cliente) clienteComboBox.getSelectedItem();
+            if (clienteEscolhido == null) {
+                JOptionPane.showMessageDialog(this, "Por favor, selecione um cliente!", "Validação", JOptionPane.WARNING_MESSAGE);
+                clienteComboBox.requestFocus();
+                return;
+            }
+            
             Funcionario funcionarioEscolhido = (Funcionario) funcionarioComboBox.getSelectedItem();
+            if (funcionarioEscolhido == null) {
+                JOptionPane.showMessageDialog(this, "Por favor, selecione um funcionário!", "Validação", JOptionPane.WARNING_MESSAGE);
+                funcionarioComboBox.requestFocus();
+                return;
+            }
+            
             osSelecionada.setCliente(clienteEscolhido);
             osSelecionada.setFuncionario(funcionarioEscolhido);
 
@@ -441,27 +453,30 @@ public class OrdemServicoView extends JFrame {
             statusComboBox.setEnabled(true); // Habilitar se ainda não tiver concluído
         }
         txtValorPago.setText(String.valueOf(os.getValorPago()));
-        
-        // Selecionar o cliente correto no ComboBox
+          // Selecionar o cliente correto no ComboBox
         if (os.getCliente() != null) {
             for (int i = 0; i < clienteComboBox.getItemCount(); i++) {
                 Cliente cliente = (Cliente) clienteComboBox.getItemAt(i);
-                if (cliente.getIdCliente() == os.getCliente().getIdCliente()) {
+                if (cliente != null && cliente.getIdCliente() == os.getCliente().getIdCliente()) {
                     clienteComboBox.setSelectedIndex(i);
                     break;
                 }
             }
+        } else {
+            clienteComboBox.setSelectedIndex(0); // Selecionar o item null (primeira opção)
         }
         
         // Selecionar o funcionário correto no ComboBox
         if (os.getFuncionario() != null) {
             for (int i = 0; i < funcionarioComboBox.getItemCount(); i++) {
                 Funcionario funcionario = (Funcionario) funcionarioComboBox.getItemAt(i);
-                if (funcionario.getIdFuncionario() == os.getFuncionario().getIdFuncionario()) {
+                if (funcionario != null && funcionario.getIdFuncionario() == os.getFuncionario().getIdFuncionario()) {
                     funcionarioComboBox.setSelectedIndex(i);
                     break;
                 }
             }
+        } else {
+            funcionarioComboBox.setSelectedIndex(0); // Selecionar o item null (primeira opção)
         }
     }    // Método para limpar os campos do formulário
     private void limparCampos() {
@@ -481,7 +496,7 @@ public class OrdemServicoView extends JFrame {
         funcionarioComboBox.setEnabled(true);
 
         btnSalvar.setEnabled(true);
-        btnAtualizar.setEnabled(false);
+        // btnAtualizar.setEnabled(false);
         btnExcluir.setEnabled(false);
 
         tabelaOrdemServico.clearSelection();
@@ -534,10 +549,12 @@ public class OrdemServicoView extends JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar Ordens de Serviço: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
-    }
-    // Método para carregar a lista de clientes
+    }    // Método para carregar a lista de clientes
     private void carregarClientes() {
         try {
+            clienteComboBox.removeAllItems();
+            clienteComboBox.addItem(null); // Item para "Selecione um cliente..."
+            
             List<Cliente> clientes = clienteDAO.listarTodos();
             for (Cliente cliente : clientes) {
                 clienteComboBox.addItem(cliente);
@@ -545,32 +562,19 @@ public class OrdemServicoView extends JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar clientes: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    // Método para carregar a lista de funcionários
+    }    // Método para carregar a lista de funcionários
     private void carregarFuncionarios() {
         try {
+            funcionarioComboBox.removeAllItems();
+            funcionarioComboBox.addItem(null); // Item para "Selecione um funcionário..."
+            
             List<Funcionario> funcionarios = funcionarioDAO.listarTodos();
             for (Funcionario funcionario : funcionarios) {
                 funcionarioComboBox.addItem(funcionario);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar funcionários: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    // Método principal para iniciar a aplicação
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            new OrdemServicoView().setVisible(true);
-        });
-    }
+        }    }
 
     // Classe utilitária para máscaras de campos
     public static MaskFormatter mascara(String mascara) {
@@ -582,5 +586,57 @@ public class OrdemServicoView extends JFrame {
             System.out.println("Erro ao criar máscara: " + excecao.getMessage());
         }
         return F_Mascara;
+    }
+}
+
+// Renderer customizado para o ComboBox de clientes
+class ClienteComboBoxRenderer extends DefaultListCellRenderer {
+    @Override
+    public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                  boolean isSelected, boolean cellHasFocus) {
+        super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        
+        if (value instanceof Cliente) {
+            Cliente cliente = (Cliente) value;
+            String enderecoInfo = "";
+            if (cliente.getEndereco() != null) {
+                String cidade = cliente.getEndereco().getCidade();
+                String estado = cliente.getEndereco().getEstado();
+                if (cidade != null && !cidade.trim().isEmpty()) {
+                    enderecoInfo = " - " + cidade;
+                    if (estado != null && !estado.trim().isEmpty()) {
+                        enderecoInfo += "/" + estado.toUpperCase();
+                    }
+                }
+            }
+            setText(cliente.getNome() + " (ID: " + cliente.getIdCliente() + ")" + enderecoInfo);
+            setToolTipText("Telefone: " + cliente.getTelefone() + " | Email: " + cliente.getEmail());
+        } else if (value == null) {
+            setText("Selecione um cliente...");
+            setToolTipText(null);
+        }
+        
+        return this;
+    }
+}
+
+// Renderer customizado para o ComboBox de funcionários
+class FuncionarioComboBoxRenderer extends DefaultListCellRenderer {
+    @Override
+    public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                  boolean isSelected, boolean cellHasFocus) {
+        super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        
+        if (value instanceof Funcionario) {
+            Funcionario funcionario = (Funcionario) value;
+            setText(funcionario.getNome() + " - " + funcionario.getCargo() + " (ID: " + funcionario.getIdFuncionario() + ")");
+            setToolTipText("Telefone: " + funcionario.getTelefone() + " | Email: " + funcionario.getEmail() + 
+                          " | Usuário: " + (funcionario.getUsuario() != null ? funcionario.getUsuario().getNomeUsuario() : "N/A"));
+        } else if (value == null) {
+            setText("Selecione um funcionário...");
+            setToolTipText(null);
+        }
+        
+        return this;
     }
 }
