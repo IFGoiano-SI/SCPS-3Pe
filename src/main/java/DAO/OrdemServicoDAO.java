@@ -15,20 +15,19 @@ import java.util.List;
 public class OrdemServicoDAO implements DAO<OrdemServico> {
 
     public OrdemServicoDAO() {
-    }
-
-    @Override
+    }    @Override
     public int inserir(OrdemServico ordemServico) {
-        String sql = "INSERT INTO ordem_servico (data_abertura, data_conclusao, id_cliente, id_funcionario, descricao, valor_pago) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO ordem_servico (data_abertura, data_conclusao, status, id_cliente, id_funcionario, descricao, valor_pago) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexaoDB.getConexao();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setTimestamp(1, Timestamp.valueOf(ordemServico.getDataAbertura()));
             stmt.setTimestamp(2, ordemServico.getDataConclusao() != null ? Timestamp.valueOf(ordemServico.getDataConclusao()) : null);
-            stmt.setInt(3, ordemServico.getCliente().getIdCliente());
-            stmt.setInt(4, ordemServico.getFuncionario().getIdFuncionario());
-            stmt.setString(5, ordemServico.getDescricao());
-            stmt.setDouble(6, ordemServico.getValorPago());
+            stmt.setString(3, ordemServico.getStatus().name()); // Adicionar o status
+            stmt.setInt(4, ordemServico.getCliente().getIdCliente());
+            stmt.setInt(5, ordemServico.getFuncionario().getIdFuncionario());
+            stmt.setString(6, ordemServico.getDescricao());
+            stmt.setDouble(7, ordemServico.getValorPago());
 
             stmt.executeUpdate();
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
@@ -40,12 +39,10 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
             e.printStackTrace();
         }
         return -1;
-    }
-
-    @Override
+    }    @Override
     public boolean atualizar(OrdemServico ordemServico) {
         String sql = "UPDATE ordem_servico SET data_abertura = ?, data_conclusao = ?, status = ?, id_cliente = ?, id_funcionario = ?, descricao = ?, valor_pago = ? WHERE id_ordem = ?";
-        try (PreparedStatement stmt = new ConexaoDB().getConexao().prepareStatement(sql)) {
+        try (PreparedStatement stmt = ConexaoDB.getConexao().prepareStatement(sql)) {
             stmt.setTimestamp(1, Timestamp.valueOf(ordemServico.getDataAbertura()));
             stmt.setTimestamp(2, ordemServico.getDataConclusao() != null ? Timestamp.valueOf(ordemServico.getDataConclusao()) : null);
             stmt.setString(3, ordemServico.getStatus().name()); // Converte o enum Status para String usando name()
@@ -61,12 +58,10 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
             System.err.println("Erro ao atualizar ordem de serviço: " + e.getMessage());
             return false;
         }
-    }
-
-    @Override
+    }    @Override
     public boolean remover(int id) {
         String sql = "DELETE FROM ordem_servico WHERE id_ordem = ?";
-        try (PreparedStatement stmt = new ConexaoDB().getConexao().prepareStatement(sql)) {
+        try (PreparedStatement stmt = ConexaoDB.getConexao().prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
             return true;
@@ -79,7 +74,7 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
     @Override
     public OrdemServico buscarPorId(int id) {
         String sql = "SELECT * FROM ordem_servico WHERE id_ordem = ?";
-        try (PreparedStatement stmt = new ConexaoDB().getConexao().prepareStatement(sql)) {
+        try (PreparedStatement stmt = ConexaoDB.getConexao().prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -95,6 +90,7 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
                         cliente,
                         funcionario,
                         descricao,
+                        rs.getDouble("valor_pago"), // Adicionar o valor_pago
                         rs.getTimestamp("created_at").toLocalDateTime(),
                         rs.getTimestamp("updated_at").toLocalDateTime()
                 );
@@ -103,13 +99,11 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
             System.err.println("Erro ao buscar ordem de serviço por ID: " + e.getMessage());
         }
         return null;
-    }
-
-    @Override
+    }    @Override
     public List<OrdemServico> listarTodos() {
         String sql = "SELECT * FROM ordem_servico";
         List<OrdemServico> ordens = new ArrayList<>();
-        try (PreparedStatement stmt = new ConexaoDB().getConexao().prepareStatement(sql)) {
+        try (PreparedStatement stmt = ConexaoDB.getConexao().prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Cliente cliente = new ClienteDAO().buscarPorId(rs.getInt("id_cliente"));
@@ -133,12 +127,10 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
             System.err.println("Erro ao listar ordens de serviço: " + e.getMessage());
         }
         return ordens;
-    }
-
-    public List<OrdemServico> buscarPorCliente(int idCliente) {
+    }    public List<OrdemServico> buscarPorCliente(int idCliente) {
         String sql = "SELECT * FROM ordem_servico WHERE id_cliente = ?";
         List<OrdemServico> ordens = new ArrayList<>();
-        try (Connection connection = new ConexaoDB().getConexao();
+        try (Connection connection = ConexaoDB.getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, idCliente);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -149,6 +141,7 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
                     ordem.setDataConclusao(rs.getTimestamp("data_conclusao") != null ? rs.getTimestamp("data_conclusao").toLocalDateTime() : null);
                     ordem.setStatus(OrdemServico.Status.valueOf(rs.getString("status")));
                     ordem.setDescricao(rs.getString("descricao"));
+                    ordem.setValorPago(rs.getDouble("valor_pago")); // Adicionar o valor_pago
                     ordem.setCliente(new ClienteDAO().buscarPorId(rs.getInt("id_cliente")));
                     ordem.setFuncionario(new FuncionarioDAO().buscarPorId(rs.getInt("id_funcionario")));
                     ordens.add(ordem);
@@ -163,7 +156,7 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
     public List<OrdemServico> buscarPorFuncionario(int idFuncionario) {
         String sql = "SELECT * FROM ordem_servico WHERE id_funcionario = ?";
         List<OrdemServico> ordens = new ArrayList<>();
-        try (Connection connection = new ConexaoDB().getConexao();
+        try (Connection connection = ConexaoDB.getConexao();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, idFuncionario);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -174,6 +167,7 @@ public class OrdemServicoDAO implements DAO<OrdemServico> {
                     ordem.setDataConclusao(rs.getTimestamp("data_conclusao") != null ? rs.getTimestamp("data_conclusao").toLocalDateTime() : null);
                     ordem.setStatus(OrdemServico.Status.valueOf(rs.getString("status")));
                     ordem.setDescricao(rs.getString("descricao"));
+                    ordem.setValorPago(rs.getDouble("valor_pago")); // Adicionar o valor_pago
                     ordem.setCliente(new ClienteDAO().buscarPorId(rs.getInt("id_cliente")));
                     ordem.setFuncionario(new FuncionarioDAO().buscarPorId(rs.getInt("id_funcionario")));
                     ordens.add(ordem);
