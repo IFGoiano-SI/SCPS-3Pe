@@ -70,13 +70,10 @@ public class MenuView extends JFrame {
         ordensButton.setPreferredSize(new Dimension(200, 40));
         ordensButton.addActionListener(e -> abrirMenuOrdemServicos());
         gbc.gridx = 1;
-        mainPanel.add(ordensButton, gbc);
-
-        // Relatórios Button (placeholder)
+        mainPanel.add(ordensButton, gbc);        // Relatórios Button
         JButton relatoriosButton = new JButton("Relatórios");
         relatoriosButton.setPreferredSize(new Dimension(200, 40));
-        relatoriosButton
-                .addActionListener(e -> JOptionPane.showMessageDialog(this, "Funcionalidade em desenvolvimento"));
+        relatoriosButton.addActionListener(e -> abrirRelatorios());
         gbc.gridx = 0;
         gbc.gridy = 2;
         mainPanel.add(relatoriosButton, gbc);
@@ -136,6 +133,13 @@ public class MenuView extends JFrame {
         SwingUtilities.invokeLater(() -> {
             OrdemServicoView ordemServicoView = new OrdemServicoView();
             ordemServicoView.setVisible(true);
+        });
+    }
+
+    private void abrirRelatorios() {
+        SwingUtilities.invokeLater(() -> {
+            RelatorioView relatorioView = new RelatorioView();
+            relatorioView.setVisible(true);
         });
     }
 
