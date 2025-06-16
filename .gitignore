@@ -42,3 +42,4 @@ src/main/java/Manager/*.class
 
 
 target/*
+/target/
