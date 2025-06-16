@@ -39,6 +39,7 @@ src/main/java/Environment/Environment.java
 src/main/java/DAO/*.class
 src/main/java/Entidades/*.class
 src/main/java/Manager/*.class
+src/main/java/Views/*.class
 
 
 target/*
