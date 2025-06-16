@@ -261,8 +261,7 @@ public class OrdemServicoView extends JFrame {
         btnExcluir.setEnabled(false);
         txtDescricao.requestFocus();
     }
-    OrdemServicoDAO dao = new OrdemServicoDAO();
-    // Método para salvar ou atualizar uma Ordem de Servico
+    OrdemServicoDAO dao = new OrdemServicoDAO();    // Método para salvar ou atualizar uma Ordem de Servico
     private void salvarOrdemServico() {
         if (!validarCampos()) return;
 
@@ -273,9 +272,23 @@ public class OrdemServicoView extends JFrame {
             // Escolher Funcionario já cadastrado
             Funcionario funcEscolhido = (Funcionario) funcionarioComboBox.getSelectedItem();
 
+            // Obter e validar o valor pago
+            double valorPago = 0.0;
+            String valorTexto = txtValorPago.getText().trim();
+            if (!valorTexto.isEmpty()) {
+                try {
+                    valorPago = Double.parseDouble(valorTexto);
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Valor pago deve ser um número válido!", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+                    txtValorPago.requestFocus();
+                    return;
+                }
+            }
+
             // Criar Ordem de Serviço
             OrdemServico os = new OrdemServico();
             os.setDescricao(txtDescricao.getText().trim());
+            os.setValorPago(valorPago); // Definir o valor pago
             //Status é gerado padrão como "Aberto"
             os.setCliente(clienteEscolhido);
             os.setFuncionario(funcEscolhido);
@@ -294,9 +307,11 @@ public class OrdemServicoView extends JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao salvar Ordem de Serviço: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    // Método para atualizar os dados de uma Ordem de Serviço selecionada
+    }    
+    /**
+     * Atualiza uma Ordem de Serviço selecionada com os dados do formulário.
+     * Verifica se a OS está em aberto ou em execução antes de permitir a atualização.
+     */
     private void atualizarOrdemServico() {
         if (osSelecionada == null) {
             JOptionPane.showMessageDialog(this, "Selecione uma Ordem de Serviço para atualizar!", "Aviso", JOptionPane.WARNING_MESSAGE);
@@ -315,10 +330,28 @@ public class OrdemServicoView extends JFrame {
         if (!validarCampos()) return;
 
         try {
-            // Atualizar dados da Ordem de Serviço
+            // Obter e validar o valor pago
+            double valorPago = 0.0;
+            String valorTexto = txtValorPago.getText().trim();
+            if (!valorTexto.isEmpty()) {
+                try {
+                    valorPago = Double.parseDouble(valorTexto);
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Valor pago deve ser um número válido!", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+                    txtValorPago.requestFocus();
+                    return;
+                }
+            }            // Atualizar dados da Ordem de Serviço
             osSelecionada.setDescricao(txtDescricao.getText().trim());
+            osSelecionada.setValorPago(valorPago); // Atualizar o valor pago
             OrdemServico.Status novoStatus = (OrdemServico.Status) statusComboBox.getSelectedItem();
             osSelecionada.setStatus(novoStatus);
+            
+            // Atualizar cliente e funcionário selecionados
+            Cliente clienteEscolhido = (Cliente) clienteComboBox.getSelectedItem();
+            Funcionario funcionarioEscolhido = (Funcionario) funcionarioComboBox.getSelectedItem();
+            osSelecionada.setCliente(clienteEscolhido);
+            osSelecionada.setFuncionario(funcionarioEscolhido);
 
             // Se o status foi alterado para CONCLUIDA, definir data de conclusão automaticamente
             if (novoStatus == OrdemServico.Status.CONCLUIDA && osSelecionada.getDataConclusao() == null) {
@@ -377,9 +410,7 @@ public class OrdemServicoView extends JFrame {
                 JOptionPane.showMessageDialog(this, "Erro ao excluir Ordem de Serviço: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
-    }
-
-    // Método para selecionar uma OS da tabela e preencher os campos do formulário
+    }    // Método para selecionar uma OS da tabela e preencher os campos do formulário
     private void selecionarOrdemServico() {
         int linha = tabelaOrdemServico.getSelectedRow();
         if (linha >= 0) {
@@ -389,26 +420,65 @@ public class OrdemServicoView extends JFrame {
             if (osSelecionada != null) {
                 preencherCampos(osSelecionada);
                 statusComboBox.setEnabled(true);
+                clienteComboBox.setEnabled(true);
+                funcionarioComboBox.setEnabled(true);
                 btnSalvar.setEnabled(false);
                 btnAtualizar.setEnabled(true);
                 btnExcluir.setEnabled(true);
             }
         }
-    }
-
-    // Método para preencher os campos do formulário com os dados do funcionário selecionado
+    }    /**
+     * Preenche os campos do formulário com os dados da Ordem de Serviço selecionada.
+     * @param os A Ordem de Serviço selecionada.
+     */
     private void preencherCampos(OrdemServico os) {
         txtDescricao.setText(os.getDescricao());
         statusComboBox.setSelectedItem(os.getStatus());
-        txtValorPago.setText(String.format("%.2f", os.getValorPago()));
-    }
-
-    // Método para limpar os campos do formulário
+        //aberto ou em_execucao não tem data de conclusão
+        if (os.getDataConclusao() != null) {
+            statusComboBox.setEnabled(false); // Desabilitar se já tiver data de conclusão
+        } else {
+            statusComboBox.setEnabled(true); // Habilitar se ainda não tiver concluído
+        }
+        txtValorPago.setText(String.valueOf(os.getValorPago()));
+        
+        // Selecionar o cliente correto no ComboBox
+        if (os.getCliente() != null) {
+            for (int i = 0; i < clienteComboBox.getItemCount(); i++) {
+                Cliente cliente = (Cliente) clienteComboBox.getItemAt(i);
+                if (cliente.getIdCliente() == os.getCliente().getIdCliente()) {
+                    clienteComboBox.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
+        
+        // Selecionar o funcionário correto no ComboBox
+        if (os.getFuncionario() != null) {
+            for (int i = 0; i < funcionarioComboBox.getItemCount(); i++) {
+                Funcionario funcionario = (Funcionario) funcionarioComboBox.getItemAt(i);
+                if (funcionario.getIdFuncionario() == os.getFuncionario().getIdFuncionario()) {
+                    funcionarioComboBox.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
+    }    // Método para limpar os campos do formulário
     private void limparCampos() {
         txtDescricao.setText("");
         statusComboBox.setSelectedItem(OrdemServico.Status.ABERTO);
         statusComboBox.setEnabled(false);
         txtValorPago.setText("");
+        
+        // Resetar ComboBoxes para primeira opção
+        if (clienteComboBox.getItemCount() > 0) {
+            clienteComboBox.setSelectedIndex(0);
+        }
+        if (funcionarioComboBox.getItemCount() > 0) {
+            funcionarioComboBox.setSelectedIndex(0);
+        }
+        clienteComboBox.setEnabled(true);
+        funcionarioComboBox.setEnabled(true);
 
         btnSalvar.setEnabled(true);
         btnAtualizar.setEnabled(false);
@@ -438,7 +508,10 @@ public class OrdemServicoView extends JFrame {
         return true;
     }
 
-    // Método para carregar a lista de OS na tabela
+    /**
+     * Carrega todas as Ordens de Serviço do banco de dados e preenche a tabela.
+     * Exibe uma mensagem de erro caso ocorra algum problema durante o carregamento.
+     */
     private void carregarOS() {
         modeloTabela.setRowCount(0);
         try {
@@ -451,8 +524,8 @@ public class OrdemServicoView extends JFrame {
                             ordemservico.getDataConclusao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : 
                             "--/--/----",
                         ordemservico.getStatus(),
-                        ordemservico.getCliente().getNome(),
-                        ordemservico.getFuncionario().getNome(),
+                        ordemservico.getCliente() != null ? ordemservico.getCliente().getNome() : "Cliente Deletado",
+                        ordemservico.getFuncionario() != null ? ordemservico.getFuncionario().getNome() : "Funcionário Deletado",
                         ordemservico.getDescricao(),
                         String.format("%.2f", ordemservico.getValorPago())
                 };
