@@ -25,7 +25,7 @@ import java.time.format.DateTimeFormatter;
 public class OrdemServicoView extends JFrame {
     private OrdemServicoDAO ordemServicoDAO;
     private ClienteDAO clienteDAO;
-    private FuncionarioDAO funcionarioDAO;;
+    private FuncionarioDAO funcionarioDAO;
     private UsuarioDAO usuarioDAO;
 
     // Componentes da interface
@@ -447,7 +447,9 @@ public class OrdemServicoView extends JFrame {
                 Object[] linha = {
                         ordemservico.getIdOrdem(),
                         ordemservico.getDataAbertura().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                        ordemservico.getDataConclusao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                        ordemservico.getDataConclusao() != null ? 
+                            ordemservico.getDataConclusao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : 
+                            "--/--/----",
                         ordemservico.getStatus(),
                         ordemservico.getCliente().getNome(),
                         ordemservico.getFuncionario().getNome(),
