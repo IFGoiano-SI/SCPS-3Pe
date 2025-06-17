@@ -509,14 +509,14 @@ public class ClienteView extends JFrame {
         try {
             List<Cliente> clientes = clienteDAO.listarTodos();
             for (Cliente cliente : clientes) {
-                // Formatação do endereço: "Cidade - UF"
+                // Formatação do endereço: "Cidade/UF"
                 String enderecoFormatado = "";
                 if (cliente.getEndereco() != null) {
                     String cidade = cliente.getEndereco().getCidade();
                     String estado = cliente.getEndereco().getEstado();
                     if (cidade != null && !cidade.trim().isEmpty() &&
                             estado != null && !estado.trim().isEmpty()) {
-                        enderecoFormatado = cidade + " - " + estado.toUpperCase();
+                        enderecoFormatado = cidade + "/" + estado.toUpperCase();
                     }
                 }
 

@@ -49,9 +49,10 @@ public class MenuView extends JFrame {
         // Title
         JLabel titleLabel = new JLabel("MENU PRINCIPAL", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        gbc.gridx = 0;
+        gbc.gridx = 1;
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         mainPanel.add(titleLabel, gbc);
 
         // Reset gridwidth for buttons
@@ -70,20 +71,14 @@ public class MenuView extends JFrame {
         ordensButton.setPreferredSize(new Dimension(200, 40));
         ordensButton.addActionListener(e -> abrirMenuOrdemServicos());
         gbc.gridx = 1;
-        mainPanel.add(ordensButton, gbc);        // Relatórios Button
+        mainPanel.add(ordensButton, gbc);
+
+        // Relatórios Button
         JButton relatoriosButton = new JButton("Relatórios");
         relatoriosButton.setPreferredSize(new Dimension(200, 40));
         relatoriosButton.addActionListener(e -> abrirRelatorios());
-        gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridx = 2;
         mainPanel.add(relatoriosButton, gbc);
-
-        // Configurações Button (placeholder)
-        JButton configButton = new JButton("Configurações");
-        configButton.setPreferredSize(new Dimension(200, 40));
-        configButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Funcionalidade em desenvolvimento"));
-        gbc.gridx = 1;
-        mainPanel.add(configButton, gbc);
 
         // Footer Panel with Logout button
         JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -98,7 +93,7 @@ public class MenuView extends JFrame {
     }
 
     private void abrirMenuCadastros() {
-        String[] opcoes = { "Funcionário", "Cliente", "Usuário" };
+        String[] opcoes = { "Funcionário", "Cliente"};
         String escolha = (String) JOptionPane.showInputDialog(
                 this,
                 "Escolha o tipo de cadastro:",
@@ -121,9 +116,6 @@ public class MenuView extends JFrame {
                         ClienteView clienteView = new ClienteView();
                         clienteView.setVisible(true);
                     });
-                    break;
-                case "Usuário":
-                    JOptionPane.showMessageDialog(this, "Funcionalidade de cadastro de usuário em desenvolvimento");
                     break;
             }
         }
